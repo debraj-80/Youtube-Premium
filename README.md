@@ -12,8 +12,9 @@ A lightweight YouTube extension that adds Premium branding, extended speed contr
 
 ## Screenshot
 
-<!-- Add your screenshot here -->
-<!-- Example: ![Screenshot](imgs/screenshot.png) -->
+<p align="center">
+  <img src="imgs/home.png" alt="YouTube Premium">
+</p>
 
 ---
 
