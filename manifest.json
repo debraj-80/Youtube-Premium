@@ -1,0 +1,65 @@
+{
+  "manifest_version": 3,
+  "name": "Youtube-Premium",
+  "version": "1.0",
+  "description": "A powerful extension for YouTube with Premium Logo, Speed Booster, and Shorts Autoscroll.",
+  "background": {
+    "service_worker": "background-sw.js"
+  },
+  "permissions": [
+    "activeTab",
+    "storage",
+    "tabs"
+  ],
+  "host_permissions": [
+    "*://www.youtube.com/*",
+    "*://youtube.com/*",
+    "https://*.youtube.com/*"
+  ],
+  "icons": {
+    "16": "imgs/icon16.png",
+    "32": "imgs/icon32.png",
+    "48": "imgs/icon48.png",
+    "128": "imgs/icon128.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "imgs/icon16.png",
+      "32": "imgs/icon32.png",
+      "48": "imgs/icon48.png",
+      "128": "imgs/icon128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://www.youtube.com/*",
+        "*://youtube.com/*"
+      ],
+      "js": [
+        "browser-compat.js",
+        "content.js"
+      ],
+      "run_at": "document_end"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "features.css",
+        "block-popups.css",
+        "inject-speed.js"
+      ],
+      "matches": [
+        "*://www.youtube.com/*",
+        "*://youtube.com/*"
+      ]
+    }
+  ],
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqya4gNGUIDnpfv6RTGmwgGNWB+rBZwkBXkJEdhPIEUINnVTbdie9fLblFrA9De5yes15nR80m7fi3wCko+qL0wjHjNgJLYYxlvpE6/Ea2DJdFqUeVKLjHMigLmH0E7pS3rmiTePQfrZwNoNMyoovuYdMM73Q4OhBCKe5ZRhI7CQsk9M0yJrsSQuPAK3krEIgBCQSicacK/ZW7guSUQVyH/Ez6SYJLGicUU+WuSiAJpdC/vHwbGVwvlMwPsep8S9WZ4Of1nCvfyWH5r6ZCUhrGOGnzkE9eM5Tkn537uMzithW62dESk05aRC//VjsTg0jy+Mo+7wdRFiGJxrOdo1b8QIDAQAB",
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+  },
+  "minimum_chrome_version": "125.0"
+}

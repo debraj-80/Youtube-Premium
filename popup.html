@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Youtube-Premium</title>
+<style>
+:root{
+  --bg:#08080f; --bg-2:#0c0c17;
+  --surface:rgba(15,15,24,0.96); --surface-2:rgba(255,255,255,0.045);
+  --glass-blur:20px; --glass-sat:180%;
+  --border:rgba(255,255,255,0.10); --border-hover:rgba(255,255,255,0.22);
+  --accent:#7c7bff; --accent-dim:rgba(124,123,255,0.14); --accent-glow:0 0 16px rgba(124,123,255,0.45);
+  --cyan:#2dd9f0; --cyan-dim:rgba(45,217,240,0.12); --cyan-glow:0 0 14px rgba(45,217,240,0.4);
+  --warning:#f5a524; --warn-dim:rgba(245,165,36,0.12);
+  --success:#12d992; --danger:#f2495c;
+  --text:#eeeef7; --text-sub:rgba(238,238,247,0.46); --text-muted:rgba(238,238,247,0.24);
+  --glass-shadow:0 8px 32px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(0,0,0,0.2);
+}
+*{box-sizing:border-box;}
+html{width:400px;max-width:400px;overflow-x:hidden;overflow-y:auto;}
+body{
+  width:400px;margin:0;padding:12px;box-sizing:border-box;
+  font-family:-apple-system,'SF Pro Display','Segoe UI',system-ui,sans-serif;
+  background:
+    radial-gradient(800px 320px at 10% -10%, rgba(124,123,255,0.20), transparent 55%),
+    radial-gradient(700px 300px at 100% 0%, rgba(45,217,240,0.14), transparent 50%),
+    var(--bg);
+  color:var(--text);overflow-x:hidden;overflow-y:auto;position:relative;
+  scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.18) transparent;
+}
+body::-webkit-scrollbar{width:6px;}
+body::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.18);border-radius:4px;}
+body::-webkit-scrollbar-track{background:transparent;}
+body.disabled-mode .settings-grid,.disabled-mode .footer{opacity:.35;pointer-events:none;filter:grayscale(100%);transition:all .4s ease;}
+
+/* ── shell / header ─────────────────────────────────────────────── */
+.app-shell{position:relative;animation:shellIn .4s cubic-bezier(.2,.8,.2,1);}
+@keyframes shellIn{from{opacity:0;transform:translateY(6px) scale(.985);}to{opacity:1;transform:translateY(0) scale(1);}}
+
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  background:linear-gradient(120deg, rgba(124,123,255,0.18), rgba(45,217,240,0.07) 60%, rgba(255,255,255,0.03));
+  backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));
+  -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));
+  border:1px solid var(--border);border-radius:16px;
+  box-shadow:var(--glass-shadow);
+  padding:7px 12px;margin-bottom:10px;gap:8px;width:100%;
+}
+.title-group{display:flex;align-items:center;gap:10px;}
+.ext-logo{width:30px;height:30px;border-radius:9px;box-shadow:var(--accent-glow);}
+.wordmark{margin:0;font-size:16px;font-weight:800;letter-spacing:-.3px;
+  background:linear-gradient(125deg,#fff 20%,#b7b6ff 80%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.1;}
+#ext-version-label{font-size:9.5px;color:var(--text-muted);letter-spacing:.05em;font-weight:600;}
+.topbar-right{display:flex;align-items:center;gap:8px;}
+
+.power-btn{
+  background:rgba(255,255,255,0.06);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.1);
+  border:1px solid var(--border);color:var(--text-sub);
+  border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .25s cubic-bezier(.4,0,.2,1);flex-shrink:0;
+}
+.power-btn:hover{background:rgba(255,255,255,0.1);color:var(--text);}
+.power-btn.active{color:var(--success);border-color:rgba(18,217,146,.42);background:rgba(18,217,146,.08);animation:pulseGlow 2.5s infinite alternate ease-in-out;}
+.power-btn.active svg{filter:drop-shadow(0 0 3px var(--success));}
+@keyframes pulseGlow{0%{box-shadow:0 0 4px rgba(18,217,146,.1);}100%{box-shadow:0 0 12px rgba(18,217,146,.4);}}
+
+/* ── settings grid ──────────────────────────────────────────────── */
+.settings-grid{display:flex;flex-direction:column;gap:8px;width:100%;}
+.section{
+  background:linear-gradient(155deg, rgba(255,255,255,0.06), rgba(255,255,255,0.015));
+  backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));
+  -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));
+  border:1px solid var(--border);border-radius:14px;
+  box-shadow:var(--glass-shadow);
+  padding:8px 10px 4px;display:flex;flex-direction:column;gap:0;
+  opacity:0;transform:translateY(8px);animation:secIn .35s ease-out forwards;
+  transition:border-color .25s ease, box-shadow .25s ease, transform .25s ease;
+}
+.section:hover{border-color:var(--border-hover);transform:translateY(-1px);
+  box-shadow:0 12px 36px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -1px 0 rgba(0,0,0,0.2);}
+.settings-grid .section:nth-child(1){animation-delay:.03s;}
+.settings-grid .section:nth-child(2){animation-delay:.07s;}
+.settings-grid .section:nth-child(3){animation-delay:.11s;}
+.settings-grid .section:nth-child(4){animation-delay:.15s;}
+@keyframes secIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.section-title{
+  display:flex;align-items:center;gap:6px;font-size:9.5px;font-weight:800;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--text-sub);padding:1px 2px 6px;
+}
+.section-title .dot{width:6px;height:6px;border-radius:50%;box-shadow:0 0 6px currentColor;}
+.section.appearance .section-title{color:#c3c2ff;}
+.section.appearance .dot{background:var(--accent);color:var(--accent);}
+.section.playback .section-title{color:#9be9f5;}
+.section.playback .dot{background:var(--cyan);color:var(--cyan);}
+.section.shorts .section-title{color:#f6c98a;}
+.section.shorts .dot{background:var(--warning);color:var(--warning);}
+.section.extras .section-title{color:#9ff0cf;}
+.section.extras .dot{background:var(--success);color:var(--success);}
+
+.setting{padding:4px 2px;border-bottom:1px solid rgba(255,255,255,0.045);}
+.setting:last-child{border-bottom:none;}
+.setting-row{display:flex;justify-content:space-between;align-items:center;gap:6px;transition:transform .15s ease;}
+.setting-row:hover .icon-box{background:rgba(255,255,255,0.09);transform:scale(1.14) rotate(-6deg);}
+.label-group{display:flex;align-items:center;gap:7px;min-width:0;flex:1;}
+.icon-box{background:linear-gradient(155deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));box-shadow:inset 0 1px 0 rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.09);border-radius:6px;width:22px;height:22px;display:flex;align-items:center;justify-content:center;transition:all .25s cubic-bezier(.34,1.56,.64,1);flex-shrink:0;}
+.label{font-size:11px;font-weight:600;color:var(--text);letter-spacing:-.1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.label-desc{font-size:9.5px;color:var(--text-muted);margin-top:1px;line-height:1.3;}
+
+.switch{position:relative;display:inline-block;width:32px;height:17px;flex-shrink:0;}
+.switch input{opacity:0;width:0;height:0;position:absolute;}
+.slider{position:absolute;cursor:pointer;inset:0;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:20px;transition:background .3s,border-color .3s;}
+.switch:hover .slider{border-color:rgba(255,255,255,0.24);}
+.slider::before{content:"";position:absolute;width:10px;height:10px;left:3px;top:50%;transform:translateY(-50%);background:#888;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.5);transition:transform .32s cubic-bezier(.68,-.55,.265,1.55),background .3s;}
+input:checked + .slider{background:var(--accent-dim);border-color:var(--accent);}
+input:checked + .slider::before{transform:translateY(-50%) translateX(15px);background:var(--accent);box-shadow:var(--accent-glow);}
+
+/* ── footer ──────────────────────────────────────────────────────── */
+.footer{margin-top:10px;text-align:center;font-size:9.5px;color:var(--text-sub);}
+.footer-btns{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:6px;}
+.github-btn{display:flex;align-items:center;justify-content:center;gap:5px;padding:4px 12px;background:rgba(255,255,255,0.04);border:1px solid var(--border);color:rgba(255,255,255,0.68);text-decoration:none;border-radius:20px;font-size:10.5px;font-weight:600;transition:all .25s cubic-bezier(.4,0,.2,1);}
+.github-btn svg{width:13px;height:13px;fill:currentColor;}
+.github-btn:hover{background:rgba(255,255,255,0.1);transform:scale(1.04);color:#fff;border-color:var(--border-hover);}
+</style>
+</head>
+<body>
+<div class="app-shell" id="main-view">
+
+  <!-- ── Top Bar ─────────────────────────────────────────────────────── -->
+  <div class="topbar">
+    <div class="title-group">
+      <img class="ext-logo" src="imgs/icon48.png" alt="YT Pro+">
+      <div>
+        <h1 class="wordmark">Youtube-Premium</h1>
+        <div id="ext-version-label">v1.0</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <button class="power-btn active" id="master-toggle" title="Enable / Disable extension" aria-label="Toggle extension">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Settings ────────────────────────────────────────────────────── -->
+  <div class="settings-grid">
+
+    <!-- Appearance -->
+    <div class="section appearance">
+      <div class="section-title"><span class="dot"></span> Appearance</div>
+      <div class="setting">
+        <div class="setting-row">
+          <div class="label-group">
+            <div class="icon-box">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#b7b6ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+              </svg>
+            </div>
+            <div>
+              <div class="label">Premium Logo</div>
+              <div class="label-desc">Replaces YouTube logo with Premium branding</div>
+            </div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="toggle-premium" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Speed Booster -->
+    <div class="section playback">
+      <div class="section-title"><span class="dot"></span> Playback</div>
+      <div class="setting">
+        <div class="setting-row">
+          <div class="label-group">
+            <div class="icon-box">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2dd9f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="5 3 19 12 5 21 5 3"/>
+              </svg>
+            </div>
+            <div>
+              <div class="label">Speed Booster</div>
+              <div class="label-desc">Fine-grained playback speed controls</div>
+            </div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="toggle-speed" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Shorts Autoscroll -->
+    <div class="section shorts">
+      <div class="section-title"><span class="dot"></span> Shorts</div>
+      <div class="setting">
+        <div class="setting-row">
+          <div class="label-group">
+            <div class="icon-box">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#f5a524" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/>
+              </svg>
+            </div>
+            <div>
+              <div class="label">Shorts Autoscroll</div>
+              <div class="label-desc">Auto-advance to next Short when video ends</div>
+            </div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="toggle-autoscroll" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Footer ──────────────────────────────────────────────────────── -->
+  <div class="footer">
+    Made with ❤️ — YouTube Pro+
+    <div class="footer-btns">
+      <a class="github-btn" href="https://github.com/debraj-80/Youtube-Premium" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 4.42 2.87 8.17 6.84 9.49.5.09.68-.22.68-.48v-1.7C6.73 19.91 6.14 18 6.14 18c-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.89 1.52 2.34 1.08 2.91.83.09-.65.35-1.08.63-1.33-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02A9.56 9.56 0 0 1 12 6.8c.85.004 1.71.115 2.51.337 1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.69-4.57 4.94.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10.01 10.01 0 0 0 22 12c0-5.52-4.48-10-10-10z"/></svg>
+        GitHub
+      </a>
+    </div>
+  </div>
+</div>
+
+<script src="popup.js"></script>
+</body>
+</html>
