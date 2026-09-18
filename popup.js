@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ── Features to manage ──────────────────────────────────────────────────
     // All 4 features default to ON (result[toggle] !== false).
     // A fresh install will have all toggles enabled automatically.
-    const toggles = ['premium', 'speed', 'autoscroll'];
+    const toggles = ['premium', 'autoscroll'];
     const masterToggleBtn = document.getElementById('master-toggle');
 
     // ── Load all settings ───────────────────────────────────────────────────

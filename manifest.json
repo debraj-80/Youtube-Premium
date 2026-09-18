@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Youtube-Premium",
   "version": "1.0",
-  "description": "A powerful extension for YouTube with Premium Logo, Speed Booster, and Shorts Autoscroll.",
+  "description": "A powerful extension for YouTube with Premium Logo and Shorts Autoscroll.",
   "background": {
     "service_worker": "background-sw.js"
   },
@@ -46,10 +46,9 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": [
+        "resources": [
         "features.css",
-        "block-popups.css",
-        "inject-speed.js"
+        "block-popups.css"
       ],
       "matches": [
         "*://www.youtube.com/*",

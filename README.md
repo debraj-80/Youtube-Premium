@@ -6,7 +6,7 @@
   ![Platform](https://img.shields.io/badge/platform-Chrome%20%7C%20Edge%20%7C%20Brave-green.svg)
 </div>
 
-A lightweight YouTube extension that adds Premium branding, extended speed controls, and auto-scrolling for Shorts.
+A lightweight YouTube extension that adds Premium branding and auto-scrolling for Shorts.
 
 ---
 
@@ -21,7 +21,6 @@ A lightweight YouTube extension that adds Premium branding, extended speed contr
 ## Features
 
 * **Premium Logo** — Replaces the standard YouTube logo with the YouTube Premium logo.
-* **Speed Booster** — Bypasses YouTube's 2x speed limit. Control playback speed up to 10x from the native player settings.
 * **Shorts Autoscroll** — Automatically advances to the next Short when the current one ends.
 
 ---

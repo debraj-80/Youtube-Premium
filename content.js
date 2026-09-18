@@ -112,9 +112,6 @@ if (isCtxValid()) chrome.storage.local.get(['masterEnabled', 'premium', 'speed',
     // Premium logo — default ON
     applyPremiumLogo(result.premium !== false);
 
-    // Speed booster — default ON
-    if (result.speed !== false) injectScript('inject-speed.js');
-
     // Shorts autoscroll — default ON
     if (result.autoscroll !== false) initAutoScroll();
 });
@@ -134,8 +131,6 @@ if (isCtxValid()) chrome.runtime.onMessage.addListener((request, sender, sendRes
 
     if (request.action === 'togglepremium') {
         applyPremiumLogo(request.state);
-    } else if (request.action === 'togglespeed') {
-        if (request.state) injectScript('inject-speed.js');
     } else if (request.action === 'toggleautoscroll') {
         if (request.state) {
             initAutoScroll();
