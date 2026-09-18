@@ -3,29 +3,19 @@ function isCtxValid() {
     try { return !!chrome.runtime?.id; } catch (e) { return false; }
 }
 
-// ─── YT Pro Plus: Asset Injectors ────────────────────────────────────────────
+// ─── CSS Injector ────────────────────────────────────────────────────────────
 function injectCSS(file) {
-    const id = 'yt-pro-css-' + file.replace(/[^a-z0-9]/gi, '-');
+    const id = 'yt-premium-css-' + file.replace(/[^a-z0-9]/gi, '-');
     if (document.getElementById(id)) return;
-    const link = document.createElement("link");
+    const link = document.createElement('link');
     link.id = id;
     link.href = chrome.runtime.getURL(file);
-    link.type = "text/css";
-    link.rel = "stylesheet";
-    link.classList.add('yt-pro-injected-asset');
+    link.type = 'text/css';
+    link.rel = 'stylesheet';
     (document.head || document.documentElement).appendChild(link);
 }
 
-function injectScript(file) {
-    const script = document.createElement('script');
-    script.src = chrome.runtime.getURL(file);
-    script.classList.add('yt-pro-injected-asset');
-    script.onload = function () { this.remove(); };
-    (document.head || document.documentElement).appendChild(script);
-}
-
-// ── Always inject block-popups + features.css ──
-injectCSS('block-popups.css');
+// ── Inject features.css ──
 injectCSS('features.css');
 
 // ─── Premium Logo ─────────────────────────────────────────────────────────────
@@ -105,14 +95,12 @@ function initAutoScroll() {
     }, 200);
 }
 
-// ─── Initialise everything ────────────────────────────────────────────────────
-if (isCtxValid()) chrome.storage.local.get(['masterEnabled', 'premium', 'speed', 'autoscroll'], (result) => {
+// ─── Initialise on load ──────────────────────────────────────────────────────
+if (isCtxValid()) chrome.storage.local.get(['masterEnabled', 'premium', 'autoscroll'], (result) => {
     if (result.masterEnabled === false) return;
 
-    // Premium logo — default ON
     applyPremiumLogo(result.premium !== false);
 
-    // Shorts autoscroll — default ON
     if (result.autoscroll !== false) initAutoScroll();
 });
 
@@ -122,7 +110,6 @@ if (isCtxValid()) chrome.runtime.onMessage.addListener((request, sender, sendRes
         if (!request.state) {
             applyPremiumLogo(false);
             if (autoScrollInterval) { clearInterval(autoScrollInterval); autoScrollInterval = null; }
-            document.querySelectorAll('link.yt-pro-injected-asset').forEach(el => el.remove());
         } else {
             location.reload();
         }
@@ -136,18 +123,6 @@ if (isCtxValid()) chrome.runtime.onMessage.addListener((request, sender, sendRes
             initAutoScroll();
         } else {
             if (autoScrollInterval) { clearInterval(autoScrollInterval); autoScrollInterval = null; }
-        }
-    } else if (request.action === 'pauseForPopup') {
-        const video = document.querySelector('video');
-        if (video && !video.paused) {
-            video._pausedByPopup = true;
-            video.pause();
-        }
-    } else if (request.action === 'resumeAfterPopup') {
-        const video = document.querySelector('video');
-        if (video && video._pausedByPopup) {
-            video._pausedByPopup = false;
-            video.play().catch(() => { });
         }
     }
 });
